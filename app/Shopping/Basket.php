@@ -4,31 +4,34 @@ namespace App\Shopping;
 
 class Basket {
 
-    private $basket = [];
-    private $total = null;
-    private $items = [];
+    private $basket;
+
+    public function __construct()
+    {
+        $this->basket = collect();
+    }
 
     public function add($basketItem)
     {
-        $this->basket[] = $basketItem;
+        $this->basket->push($basketItem);
         return $this; 
     }
 
-    public function sum()
+    private function sum()
     {
-        $this->total = collect($this->basket)->reduce(fn($total,$item) => $total + $item->price());
+        return $this->basket->reduce(fn($total,$item) => $total + $item->price());
     }
 
     public function total()
     {
-        $this->sum();
-        $formated = number_format($this->total,2,'.','');
+        $total = $this->sum();
+        $formated = number_format($total,2,'.','');
         return "£{$formated}";
     }
 
     public function items()
     {
-        return collect($this->basket)->map(fn($basketItem)=>$basketItem->type())->all();
+        return $this->basket->map(fn($basketItem)=>$basketItem->type())->all();
     }
 
 }
